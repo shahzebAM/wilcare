@@ -56,6 +56,11 @@ export default function ShoppingApp() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState([]);
 
+  /* ================= STAFF MODAL ================= */
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const [newStaffName, setNewStaffName] = useState('');
+  const [newStaffPassword, setNewStaffPassword] = useState('');
+
   /* ================= RESTORE LOGIN ================= */
   useEffect(() => {
     const saved = localStorage.getItem('currentUser');
@@ -195,13 +200,29 @@ Total: ₱${total}`;
     setIsCartOpen(false);
 
     const emptyQuantities = {};
-  products.forEach(p => {
-    emptyQuantities[p.id] = '';
-  });
-  setQuantityMap(emptyQuantities);
+    products.forEach(p => {
+      emptyQuantities[p.id] = '';
+    });
+    setQuantityMap(emptyQuantities);
   };
 
-  /* ================= LOGIN UI ================= */
+  /* ================= STAFF MANAGEMENT ================= */
+  const addStaff = () => {
+    if (!newStaffName || !newStaffPassword) return alert('Enter name and password');
+    if (staffList.find(s => s.name === newStaffName)) return alert('Staff already exists');
+
+    const updatedList = [...staffList, { name: newStaffName, password: newStaffPassword }];
+    setStaffList(updatedList);
+    setNewStaffName('');
+    setNewStaffPassword('');
+  };
+
+  const removeStaff = (name) => {
+    if (!window.confirm(`Remove staff "${name}"?`)) return;
+    setStaffList(staffList.filter(s => s.name !== name));
+  };
+
+  /* ================= LOGIN SCREEN ================= */
   if (screen === 'login') return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
       <Card sx={{ p: 3 }}>
@@ -213,7 +234,53 @@ Total: ₱${total}`;
     </Container>
   );
 
-  /* ================= MAIN APP ================= */
+  /* ================= ADMIN SCREEN ================= */
+  if (screen === 'admin') return (
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Stack direction="row" justifyContent="space-between" mb={2}>
+        <Typography variant="h5">Admin Panel</Typography>
+        <Button startIcon={<Logout />} color="error" onClick={logout}>Logout</Button>
+      </Stack>
+
+      <Button variant="contained" onClick={() => setIsStaffModalOpen(true)}>Manage Staff</Button>
+
+      {/* STAFF MANAGEMENT MODAL */}
+      <Modal open={isStaffModalOpen} onClose={() => setIsStaffModalOpen(false)}>
+        <Box sx={{ bgcolor: 'white', p: 3, width: 400, mx: 'auto', mt: '10%', borderRadius: 2 }}>
+          <Typography variant="h6">Staff Management</Typography>
+
+          <Stack spacing={1} mt={2}>
+            <TextField
+              label="Staff Name"
+              size="small"
+              value={newStaffName}
+              onChange={e => setNewStaffName(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              size="small"
+              type="password"
+              value={newStaffPassword}
+              onChange={e => setNewStaffPassword(e.target.value)}
+            />
+            <Button variant="contained" onClick={addStaff}>Add Staff</Button>
+          </Stack>
+
+          <Divider sx={{ my: 2 }} />
+
+          <Typography variant="subtitle1">Existing Staff</Typography>
+          {staffList.map(s => (
+            <Stack key={s.name} direction="row" justifyContent="space-between" alignItems="center" mt={1}>
+              <Typography>{s.name}</Typography>
+              <Button color="error" size="small" onClick={() => removeStaff(s.name)}>Remove</Button>
+            </Stack>
+          ))}
+        </Box>
+      </Modal>
+    </Container>
+  );
+
+  /* ================= MAIN APP SCREEN ================= */
   return (
     <Container maxWidth="xl" sx={{ mt: 2, pb: 8 }}>
       <Stack direction="row" justifyContent="space-between" mb={1}>
