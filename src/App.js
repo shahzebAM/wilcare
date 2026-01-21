@@ -42,8 +42,10 @@ export default function ShoppingApp() {
 
   /* ================= PRODUCTS ================= */
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState([]);
   const [quantityMap, setQuantityMap] = useState({});
 
@@ -77,26 +79,77 @@ export default function ShoppingApp() {
 
   /* ================= LOAD PRODUCTS ================= */
   useEffect(() => {
-    fetch('/assets/products.json')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data);
-        setFilteredProducts(data);
-        const q = {};
-        data.forEach(p => (q[p.id] = ""));
-        setQuantityMap(q);
-      });
+    // Define your JSON files here with their category names
+    const categoryFiles = [
+      { name: 'Student Items', file: '/assets/products.json' },
+      { name: 'Dental Items', file: '/assets/Dental.json' }
+      // Add more categories as needed
+    ];
+
+    Promise.all(
+      categoryFiles.map(cat =>
+        fetch(cat.file)
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            console.log(`Loaded ${cat.name}:`, data); // Debug log
+            return data.map((p, index) => ({ 
+              ...p, 
+              category: cat.name,
+              uniqueId: `${cat.name}-${p.id || index}` // Create unique ID per category
+            }));
+          })
+          .catch(err => {
+            console.error(`Failed to load ${cat.file}:`, err);
+            return [];
+          })
+      )
+    ).then(results => {
+      const allProducts = results.flat();
+      console.log('Total loaded products:', allProducts.length);
+      console.log('Products by category:', allProducts.reduce((acc, p) => {
+        acc[p.category] = (acc[p.category] || 0) + 1;
+        return acc;
+      }, {}));
+      
+      setProducts(allProducts);
+      setFilteredProducts(allProducts);
+      
+      // Extract unique categories
+      const uniqueCategories = ['All', ...new Set(allProducts.map(p => p.category))];
+      console.log('Categories:', uniqueCategories);
+      setCategories(uniqueCategories);
+      
+      const q = {};
+      allProducts.forEach(p => (q[p.uniqueId] = ""));
+      setQuantityMap(q);
+    });
   }, []);
 
   /* ================= SEARCH ================= */
   useEffect(() => {
-    setFilteredProducts(
-      products.filter(p =>
-        p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.code.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    console.log('Filtering - Selected Category:', selectedCategory);
+    console.log('Total products:', products.length);
+    
+    let filtered = products.filter(p =>
+      p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery, products]);
+    
+    console.log('After search filter:', filtered.length);
+    
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(p => p.category === selectedCategory);
+      console.log(`After category filter (${selectedCategory}):`, filtered.length);
+    }
+    
+    console.log('Filtered products:', filtered);
+    setFilteredProducts(filtered);
+  }, [searchQuery, selectedCategory, products]);
 
   /* ================= LOGIN ================= */
   const login = () => {
@@ -123,27 +176,27 @@ export default function ShoppingApp() {
 
   /* ================= CART ================= */
   const addToCart = product => {
-    const qty = Number(quantityMap[product.id] || 1);
-    const existing = cart.find(i => i.id === product.id);
+    const qty = Number(quantityMap[product.uniqueId] || 1);
+    const existing = cart.find(i => i.uniqueId === product.uniqueId);
     if (existing) {
       setCart(cart.map(i =>
-        i.id === product.id ? { ...i, quantity: i.quantity + qty } : i
+        i.uniqueId === product.uniqueId ? { ...i, quantity: i.quantity + qty } : i
       ));
     } else {
       setCart([...cart, { ...product, quantity: qty }]);
     }
   };
 
-  const updateCartQty = (id, qty) => {
+  const updateCartQty = (uniqueId, qty) => {
     if (qty <= 0) {
-      setCart(cart.filter(i => i.id !== id));
+      setCart(cart.filter(i => i.uniqueId !== uniqueId));
     } else {
-      setCart(cart.map(i => i.id === id ? { ...i, quantity: qty } : i));
+      setCart(cart.map(i => i.uniqueId === uniqueId ? { ...i, quantity: qty } : i));
     }
   };
 
-  const removeCartItem = (id) => {
-    setCart(cart.filter(i => i.id !== id));
+  const removeCartItem = (uniqueId) => {
+    setCart(cart.filter(i => i.uniqueId !== uniqueId));
   };
 
   const clearCart = () => {
@@ -296,9 +349,24 @@ Total: ₱${total}`;
         onChange={e => setSearchQuery(e.target.value)}
       />
 
+      {/* CATEGORY TABS */}
+      <Stack direction="row" spacing={1} mt={1} sx={{ overflowX: 'auto', pb: 1 }}>
+        {categories.map(cat => (
+          <Button
+            key={cat}
+            size="small"
+            variant={selectedCategory === cat ? 'contained' : 'outlined'}
+            onClick={() => setSelectedCategory(cat)}
+            sx={{ minWidth: 'auto', whiteSpace: 'nowrap' }}
+          >
+            {cat}
+          </Button>
+        ))}
+      </Stack>
+
       <Stack spacing={0.5} mt={1}>
         {filteredProducts.map((item, i) => (
-          <Card key={item.id} sx={{ p: 0.8, width: '100%' }}>
+          <Card key={item.uniqueId} sx={{ p: 0.8, width: '100%' }}>
             <Stack direction="row" alignItems="center" spacing={1}>
               <Typography sx={{ width: 70, fontSize: 13 }}>{item.code}</Typography>
 
@@ -312,10 +380,10 @@ Total: ₱${total}`;
               <TextField
                 type="number"
                 size="small"
-                value={quantityMap[item.id]}
+                value={quantityMap[item.uniqueId]}
                 onClick={e => e.stopPropagation()}
                 onChange={e =>
-                  setQuantityMap({ ...quantityMap, [item.id]: Math.max(1, Number(e.target.value)) })
+                  setQuantityMap({ ...quantityMap, [item.uniqueId]: Math.max(1, Number(e.target.value)) })
                 }
                 sx={{ width: 60 }}
               />
@@ -361,16 +429,16 @@ Total: ₱${total}`;
           </Stack>
 
           {cart.map(i => (
-            <Stack key={i.id} direction="row" spacing={1} alignItems="center">
+            <Stack key={i.uniqueId} direction="row" spacing={1} alignItems="center">
               <Typography flex={1}>{i.description}</Typography>
               <TextField
                 type="number"
                 size="small"
                 value={i.quantity}
-                onChange={e => updateCartQty(i.id, Number(e.target.value))}
+                onChange={e => updateCartQty(i.uniqueId, Number(e.target.value))}
                 sx={{ width: 70 }}
               />
-              <IconButton color="error" onClick={() => removeCartItem(i.id)}><Delete /></IconButton>
+              <IconButton color="error" onClick={() => removeCartItem(i.uniqueId)}><Delete /></IconButton>
             </Stack>
           ))}
 
