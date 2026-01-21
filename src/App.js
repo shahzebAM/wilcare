@@ -82,7 +82,7 @@ export default function ShoppingApp() {
     // Define your JSON files here with their category names
     const categoryFiles = [
       { name: 'Student Items', file: '/assets/products.json' },
-      { name: 'Dental Items', file: '/assets/Dental.json' }
+      { name: 'Dental Items', file: '/assets/dental.json' }
       // Add more categories as needed
     ];
 
