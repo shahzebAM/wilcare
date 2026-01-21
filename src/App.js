@@ -45,7 +45,7 @@ export default function ShoppingApp() {
   const [categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Student Items');
   const [cart, setCart] = useState([]);
   const [quantityMap, setQuantityMap] = useState({});
 
@@ -82,7 +82,7 @@ export default function ShoppingApp() {
     // Define your JSON files here with their category names
     const categoryFiles = [
       { name: 'Student Items', file: '/assets/products.json' },
-      { name: 'Dental Items', file: '/assets/dental.json' }
+      // { name: 'Dental Items', file: '/assets/Dental.json' }
       // Add more categories as needed
     ];
 
@@ -120,7 +120,7 @@ export default function ShoppingApp() {
       setFilteredProducts(allProducts);
       
       // Extract unique categories
-      const uniqueCategories = ['All', ...new Set(allProducts.map(p => p.category))];
+      const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
       console.log('Categories:', uniqueCategories);
       setCategories(uniqueCategories);
       
@@ -142,10 +142,8 @@ export default function ShoppingApp() {
     
     console.log('After search filter:', filtered.length);
     
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(p => p.category === selectedCategory);
-      console.log(`After category filter (${selectedCategory}):`, filtered.length);
-    }
+    filtered = filtered.filter(p => p.category === selectedCategory);
+    console.log(`After category filter (${selectedCategory}):`, filtered.length);
     
     console.log('Filtered products:', filtered);
     setFilteredProducts(filtered);
