@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ImageViewer from 'react-simple-image-viewer';
-import {
-  Container,
-  TextField,
-  Button,
-  Card,
-  Typography,
-  Box,
-  IconButton,
-  Stack,
-  Divider,
-  Modal,
-  Autocomplete,
-  Badge
-} from '@mui/material';
-import { Add, Remove, Logout, ShoppingCart, Delete } from '@mui/icons-material';
 
 export default function ShoppingApp() {
 
@@ -36,9 +21,19 @@ export default function ShoppingApp() {
   });
   const [checkoutCustomer, setCheckoutCustomer] = useState('');
 
+  /* ================= ORDER HISTORY ================= */
+  const [orderHistory, setOrderHistory] = useState(() => {
+    const saved = localStorage.getItem('orderHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('customers', JSON.stringify(customers));
   }, [customers]);
+
+  useEffect(() => {
+    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+  }, [orderHistory]);
 
   /* ================= PRODUCTS ================= */
   const [products, setProducts] = useState([]);
@@ -79,11 +74,8 @@ export default function ShoppingApp() {
 
   /* ================= LOAD PRODUCTS ================= */
   useEffect(() => {
-    // Define your JSON files here with their category names
     const categoryFiles = [
       { name: 'Student Items', file: '/assets/products.json' },
-      // { name: 'Dental Items', file: '/assets/Dental.json' }
-      // Add more categories as needed
     ];
 
     Promise.all(
@@ -96,11 +88,11 @@ export default function ShoppingApp() {
             return res.json();
           })
           .then(data => {
-            console.log(`Loaded ${cat.name}:`, data); // Debug log
+            console.log(`Loaded ${cat.name}:`, data);
             return data.map((p, index) => ({ 
               ...p, 
               category: cat.name,
-              uniqueId: `${cat.name}-${p.id || index}` // Create unique ID per category
+              uniqueId: `${cat.name}-${p.id || index}`
             }));
           })
           .catch(err => {
@@ -111,41 +103,31 @@ export default function ShoppingApp() {
     ).then(results => {
       const allProducts = results.flat();
       console.log('Total loaded products:', allProducts.length);
-      console.log('Products by category:', allProducts.reduce((acc, p) => {
-        acc[p.category] = (acc[p.category] || 0) + 1;
-        return acc;
-      }, {}));
       
       setProducts(allProducts);
       setFilteredProducts(allProducts);
       
-      // Extract unique categories
       const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
       console.log('Categories:', uniqueCategories);
       setCategories(uniqueCategories);
       
       const q = {};
-      allProducts.forEach(p => (q[p.uniqueId] = ""));
+      allProducts.forEach(p => {
+        q[p.uniqueId] = '';
+      });
       setQuantityMap(q);
     });
   }, []);
 
   /* ================= SEARCH ================= */
   useEffect(() => {
-    console.log('Filtering - Selected Category:', selectedCategory);
-    console.log('Total products:', products.length);
-    
     let filtered = products.filter(p =>
       p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
     
-    console.log('After search filter:', filtered.length);
-    
     filtered = filtered.filter(p => p.category === selectedCategory);
-    console.log(`After category filter (${selectedCategory}):`, filtered.length);
     
-    console.log('Filtered products:', filtered);
     setFilteredProducts(filtered);
   }, [searchQuery, selectedCategory, products]);
 
@@ -173,16 +155,35 @@ export default function ShoppingApp() {
   };
 
   /* ================= CART ================= */
-  const addToCart = product => {
-    const qty = Number(quantityMap[product.uniqueId] || 1);
-    const existing = cart.find(i => i.uniqueId === product.uniqueId);
-    if (existing) {
-      setCart(cart.map(i =>
-        i.uniqueId === product.uniqueId ? { ...i, quantity: i.quantity + qty } : i
-      ));
-    } else {
-      setCart([...cart, { ...product, quantity: qty }]);
+  const addSelectedToCart = () => {
+    const itemsToAdd = filteredProducts.filter(p => {
+      const qty = quantityMap[p.uniqueId];
+      return qty && qty !== '' && Number(qty) > 0;
+    });
+    
+    if (itemsToAdd.length === 0) {
+      alert('Please enter quantities for items to add');
+      return;
     }
+
+    itemsToAdd.forEach(product => {
+      const qty = Number(quantityMap[product.uniqueId]);
+      const existing = cart.find(i => i.uniqueId === product.uniqueId);
+      if (existing) {
+        setCart(prev => prev.map(i =>
+          i.uniqueId === product.uniqueId ? { ...i, quantity: i.quantity + qty } : i
+        ));
+      } else {
+        setCart(prev => [...prev, { ...product, quantity: qty }]);
+      }
+    });
+
+    // Clear quantities after adding
+    const clearedQuantities = {};
+    Object.keys(quantityMap).forEach(key => {
+      clearedQuantities[key] = '';
+    });
+    setQuantityMap(clearedQuantities);
   };
 
   const updateCartQty = (uniqueId, qty) => {
@@ -252,7 +253,7 @@ Total: ₱${total}`;
 
     const emptyQuantities = {};
     products.forEach(p => {
-      emptyQuantities[p.id] = '';
+      emptyQuantities[p.uniqueId] = '';
     });
     setQuantityMap(emptyQuantities);
   };
@@ -275,193 +276,361 @@ Total: ₱${total}`;
 
   /* ================= LOGIN SCREEN ================= */
   if (screen === 'login') return (
-    <Container maxWidth="xs" sx={{ mt: 8 }}>
-      <Card sx={{ p: 3 }}>
-        <Typography variant="h5">Login</Typography>
-        <TextField fullWidth label="Username" sx={{ mt: 2 }} value={loginName} onChange={e => setLoginName(e.target.value)} />
-        <TextField fullWidth type="password" label="Password" sx={{ mt: 2 }} value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
-        <Button fullWidth variant="contained" sx={{ mt: 3 }} onClick={login}>Login</Button>
-      </Card>
-    </Container>
+    <div style={{ maxWidth: 400, margin: '80px auto', padding: 20 }}>
+      <div style={{ background: 'white', padding: 30, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ marginBottom: 20 }}>Login</h2>
+        <input
+          style={{ width: '100%', padding: 10, marginBottom: 15, border: '1px solid #ddd', borderRadius: 4 }}
+          placeholder="Username"
+          value={loginName}
+          onChange={e => setLoginName(e.target.value)}
+        />
+        <input
+          style={{ width: '100%', padding: 10, marginBottom: 15, border: '1px solid #ddd', borderRadius: 4 }}
+          type="password"
+          placeholder="Password"
+          value={loginPassword}
+          onChange={e => setLoginPassword(e.target.value)}
+        />
+        <button
+          style={{ width: '100%', padding: 10, background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          onClick={login}
+        >
+          Login
+        </button>
+      </div>
+    </div>
   );
 
   /* ================= ADMIN SCREEN ================= */
   if (screen === 'admin') return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack direction="row" justifyContent="space-between" mb={2}>
-        <Typography variant="h5">Admin Panel</Typography>
-        <Button startIcon={<Logout />} color="error" onClick={logout}>Logout</Button>
-      </Stack>
+    <div style={{ maxWidth: 600, margin: '40px auto', padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+        <h2>Admin Panel</h2>
+        <button
+          style={{ padding: '8px 16px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          onClick={logout}
+        >
+          Logout
+        </button>
+      </div>
 
-      <Button variant="contained" onClick={() => setIsStaffModalOpen(true)}>Manage Staff</Button>
+      <button
+        style={{ padding: '10px 20px', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+        onClick={() => setIsStaffModalOpen(true)}
+      >
+        Manage Staff
+      </button>
 
       {/* STAFF MANAGEMENT MODAL */}
-      <Modal open={isStaffModalOpen} onClose={() => setIsStaffModalOpen(false)}>
-        <Box sx={{ bgcolor: 'white', p: 3, width: 400, mx: 'auto', mt: '10%', borderRadius: 2 }}>
-          <Typography variant="h6">Staff Management</Typography>
+      {isStaffModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', padding: 30, width: 400, borderRadius: 8 }}>
+            <h3 style={{ marginBottom: 20 }}>Staff Management</h3>
 
-          <Stack spacing={1} mt={2}>
-            <TextField
-              label="Staff Name"
-              size="small"
+            <input
+              style={{ width: '100%', padding: 8, marginBottom: 10, border: '1px solid #ddd', borderRadius: 4 }}
+              placeholder="Staff Name"
               value={newStaffName}
               onChange={e => setNewStaffName(e.target.value)}
             />
-            <TextField
-              label="Password"
-              size="small"
+            <input
+              style={{ width: '100%', padding: 8, marginBottom: 10, border: '1px solid #ddd', borderRadius: 4 }}
               type="password"
+              placeholder="Password"
               value={newStaffPassword}
               onChange={e => setNewStaffPassword(e.target.value)}
             />
-            <Button variant="contained" onClick={addStaff}>Add Staff</Button>
-          </Stack>
+            <button
+              style={{ width: '100%', padding: 10, background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginBottom: 20 }}
+              onClick={addStaff}
+            >
+              Add Staff
+            </button>
 
-          <Divider sx={{ my: 2 }} />
+            <hr style={{ margin: '20px 0' }} />
 
-          <Typography variant="subtitle1">Existing Staff</Typography>
-          {staffList.map(s => (
-            <Stack key={s.name} direction="row" justifyContent="space-between" alignItems="center" mt={1}>
-              <Typography>{s.name}</Typography>
-              <Button color="error" size="small" onClick={() => removeStaff(s.name)}>Remove</Button>
-            </Stack>
-          ))}
-        </Box>
-      </Modal>
-    </Container>
+            <h4 style={{ marginBottom: 10 }}>Existing Staff</h4>
+            {staffList.map(s => (
+              <div key={s.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0' }}>
+                <span>{s.name}</span>
+                <button
+                  style={{ padding: '4px 12px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}
+                  onClick={() => removeStaff(s.name)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              style={{ width: '100%', padding: 10, background: '#666', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginTop: 20 }}
+              onClick={() => setIsStaffModalOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
+
+  const selectedCount = filteredProducts.filter(p => {
+    const qty = quantityMap[p.uniqueId];
+    return qty && qty !== '' && Number(qty) > 0;
+  }).length;
 
   /* ================= MAIN APP SCREEN ================= */
   return (
-    <Container maxWidth="xl" sx={{ mt: 2, pb: 8 }}>
-      <Stack direction="row" justifyContent="space-between" mb={1}>
-        <Typography variant="h5">Products</Typography>
-        <Button startIcon={<Logout />} color="error" onClick={logout}>Logout</Button>
-      </Stack>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 20px 100px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+        <h2>Products</h2>
+        <button
+          style={{ padding: '8px 16px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          onClick={logout}
+        >
+          Logout
+        </button>
+      </div>
 
-      <TextField
-        fullWidth
-        size="small"
+      <input
+        style={{ width: '100%', padding: 10, marginBottom: 15, border: '1px solid #ddd', borderRadius: 4 }}
         placeholder="Search..."
         value={searchQuery}
         onChange={e => setSearchQuery(e.target.value)}
       />
 
       {/* CATEGORY TABS */}
-      <Stack direction="row" spacing={1} mt={1} sx={{ overflowX: 'auto', pb: 1 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 15, overflowX: 'auto', paddingBottom: 10 }}>
         {categories.map(cat => (
-          <Button
+          <button
             key={cat}
-            size="small"
-            variant={selectedCategory === cat ? 'contained' : 'outlined'}
+            style={{
+              padding: '8px 16px',
+              background: selectedCategory === cat ? '#1976d2' : 'white',
+              color: selectedCategory === cat ? 'white' : '#333',
+              border: '1px solid #ddd',
+              borderRadius: 4,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
             onClick={() => setSelectedCategory(cat)}
-            sx={{ minWidth: 'auto', whiteSpace: 'nowrap' }}
           >
             {cat}
-          </Button>
+          </button>
         ))}
-      </Stack>
+      </div>
 
-      <Stack spacing={0.5} mt={1}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filteredProducts.map((item, i) => (
-          <Card key={item.uniqueId} sx={{ p: 0.8, width: '100%' }}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography sx={{ width: 70, fontSize: 13 }}>{item.code}</Typography>
+          <div key={item.uniqueId} style={{ background: 'white', padding: 12, borderRadius: 4, boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 70, fontSize: 13, fontFamily: 'monospace' }}>{item.code}</span>
 
-              <Box flex={1} onClick={() => openImageViewer(i)} sx={{ cursor: 'pointer' }}>
-                <Typography sx={{ fontSize: 13 }}>
-                  {item.description}
-                  <Box component="span" sx={{ ml: 1, color: 'green' }}>₱{item.price}</Box>
-                </Typography>
-              </Box>
-
-              <TextField
-                type="number"
-                size="small"
-                value={quantityMap[item.uniqueId]}
-                onClick={e => e.stopPropagation()}
-                onChange={e =>
-                  setQuantityMap({ ...quantityMap, [item.uniqueId]: Math.max(1, Number(e.target.value)) })
-                }
-                sx={{ width: 60 }}
-              />
-
-              <Button
-                size="small"
-                variant="contained"
-                onClick={e => { e.stopPropagation(); addToCart(item); }}
+              <span
+                style={{ flex: 1, fontSize: 13, cursor: 'pointer' }}
+                onClick={() => openImageViewer(i)}
               >
-                Add
-              </Button>
-            </Stack>
-          </Card>
+                {item.description}
+              </span>
+
+              <span style={{ color: 'green', fontWeight: 'bold' }}>₱{item.price}</span>
+
+              <input
+                type="number"
+                value={quantityMap[item.uniqueId]}
+                onChange={e =>
+                  setQuantityMap({ ...quantityMap, [item.uniqueId]: e.target.value })
+                }
+                style={{ width: 100, padding: 6, border: '1px solid #ddd', borderRadius: 4, textAlign: 'center' }}
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+          </div>
         ))}
-      </Stack>
+      </div>
+
+      {/* SINGLE ADD BUTTON */}
+      {selectedCount > 0 && (
+        <button
+          onClick={addSelectedToCart}
+          style={{
+            position: 'fixed',
+            bottom: 100,
+            right: 20,
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            background: '#1976d2',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            fontSize: 24,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100
+          }}
+        >
+          +
+          {selectedCount > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: -8,
+              right: -8,
+              background: '#d32f2f',
+              color: 'white',
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 12,
+              fontWeight: 'bold'
+            }}>
+              {selectedCount}
+            </span>
+          )}
+        </button>
+      )}
 
       {/* CART FLOATING BUTTON */}
-      <IconButton
+      <button
         onClick={() => setIsCartOpen(true)}
-        sx={{
+        style={{
           position: 'fixed',
           bottom: 20,
           right: 20,
-          bgcolor: 'success.main',
-          color: 'white',
           width: 60,
           height: 60,
-          boxShadow: 4,
-          '&:hover': { bgcolor: 'success.dark' }
+          borderRadius: '50%',
+          background: '#2e7d32',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          fontSize: 24,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100
         }}
       >
-        <Badge badgeContent={cart.reduce((s, i) => s + i.quantity, 0)} color="error">
-          <ShoppingCart />
-        </Badge>
-      </IconButton>
+        🛒
+        {cart.length > 0 && (
+          <span style={{
+            position: 'absolute',
+            top: -8,
+            right: -8,
+            background: '#d32f2f',
+            color: 'white',
+            width: 24,
+            height: 24,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 12,
+            fontWeight: 'bold'
+          }}>
+            {cart.reduce((s, i) => s + i.quantity, 0)}
+          </span>
+        )}
+      </button>
 
       {/* CART MODAL */}
-      <Modal open={isCartOpen} onClose={() => setIsCartOpen(false)}>
-        <Box sx={{ bgcolor: 'white', p: 3, width: 450, mx: 'auto', mt: '10%', borderRadius: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="h6">Cart</Typography>
-            <Button color="error" size="small" startIcon={<Delete />} onClick={clearCart}>Clear Cart</Button>
-          </Stack>
+      {isCartOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', padding: 30, width: 450, borderRadius: 8, maxHeight: '80vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3>Cart</h3>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  style={{ padding: '4px 12px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}
+                  onClick={clearCart}
+                >
+                  Clear Cart
+                </button>
+                <button
+                  style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer' }}
+                  onClick={() => setIsCartOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
 
-          {cart.map(i => (
-            <Stack key={i.uniqueId} direction="row" spacing={1} alignItems="center">
-              <Typography flex={1}>{i.description}</Typography>
-              <TextField
-                type="number"
-                size="small"
-                value={i.quantity}
-                onChange={e => updateCartQty(i.uniqueId, Number(e.target.value))}
-                sx={{ width: 70 }}
-              />
-              <IconButton color="error" onClick={() => removeCartItem(i.uniqueId)}><Delete /></IconButton>
-            </Stack>
-          ))}
+            {cart.map(i => (
+              <div key={i.uniqueId} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, paddingBottom: 10, borderBottom: '1px solid #eee' }}>
+                <span style={{ flex: 1, fontSize: 14 }}>{i.description}</span>
+                <input
+                  type="number"
+                  value={i.quantity}
+                  onChange={e => updateCartQty(i.uniqueId, Number(e.target.value))}
+                  style={{ width: 80, padding: 6, border: '1px solid #ddd', borderRadius: 4, textAlign: 'center' }}
+                />
+                <button
+                  style={{ padding: 6, background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+                  onClick={() => removeCartItem(i.uniqueId)}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
 
-          <Button fullWidth sx={{ mt: 2 }} variant="contained" onClick={() => setIsCheckoutOpen(true)}>Checkout</Button>
-        </Box>
-      </Modal>
+            <button
+              style={{ width: '100%', padding: 12, background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginTop: 20 }}
+              onClick={() => {
+                setIsCartOpen(false);
+                setIsCheckoutOpen(true);
+              }}
+            >
+              Checkout
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* CHECKOUT MODAL */}
-      <Modal open={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)}>
-        <Box sx={{ bgcolor: 'white', p: 3, width: 420, mx: 'auto', mt: '10%', borderRadius: 2 }}>
-          <Typography variant="h6">Customer Name</Typography>
-          <Autocomplete
-            freeSolo
-            options={customers}
-            value={checkoutCustomer}
-            onChange={(e, v) => setCheckoutCustomer(v || '')}
-            onInputChange={(e, v) => setCheckoutCustomer(v)}
-            renderInput={(params) => <TextField {...params} sx={{ mt: 2 }} />}
-          />
-          <Stack direction="row" spacing={1} mt={3}>
-            <Button fullWidth variant="contained" onClick={checkoutEmail}>Email</Button>
-            <Button fullWidth variant="contained" color="success" onClick={checkoutViber}>Viber</Button>
-          </Stack>
-        </Box>
-      </Modal>
+      {isCheckoutOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', padding: 30, width: 420, borderRadius: 8 }}>
+            <h3 style={{ marginBottom: 20 }}>Customer Name</h3>
+            <input
+              style={{ width: '100%', padding: 10, marginBottom: 20, border: '1px solid #ddd', borderRadius: 4 }}
+              placeholder="Enter customer name"
+              value={checkoutCustomer}
+              onChange={e => setCheckoutCustomer(e.target.value)}
+              list="customers"
+            />
+            <datalist id="customers">
+              {customers.map(c => <option key={c} value={c} />)}
+            </datalist>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                style={{ flex: 1, padding: 12, background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+                onClick={checkoutEmail}
+              >
+                Email
+              </button>
+              <button
+                style={{ flex: 1, padding: 12, background: '#2e7d32', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+                onClick={checkoutViber}
+              >
+                Viber
+              </button>
+            </div>
+            <button
+              style={{ width: '100%', padding: 10, background: '#666', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginTop: 10 }}
+              onClick={() => setIsCheckoutOpen(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {isViewerOpen && (
         <ImageViewer
@@ -471,6 +640,6 @@ Total: ₱${total}`;
           onClose={() => setIsViewerOpen(false)}
         />
       )}
-    </Container>
+    </div>
   );
 }
