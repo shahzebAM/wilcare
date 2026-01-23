@@ -26,6 +26,7 @@ export default function ShoppingApp() {
     const saved = localStorage.getItem('orderHistory');
     return saved ? JSON.parse(saved) : [];
   });
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('customers', JSON.stringify(customers));
@@ -178,7 +179,6 @@ export default function ShoppingApp() {
       }
     });
 
-    // Clear quantities after adding
     const clearedQuantities = {};
     Object.keys(quantityMap).forEach(key => {
       clearedQuantities[key] = '';
@@ -231,8 +231,26 @@ Total: ₱${total}`;
     }
   };
 
+  const saveOrderToHistory = () => {
+    const order = {
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      staff: currentUser.name,
+      customer: checkoutCustomer,
+      items: cart.map(i => ({
+        code: i.code,
+        description: i.description,
+        quantity: i.quantity,
+        price: i.price
+      })),
+      total: cart.reduce((s, i) => s + i.price * i.quantity, 0)
+    };
+    setOrderHistory([order, ...orderHistory]);
+  };
+
   const checkoutEmail = () => {
     finalizeCustomer();
+    saveOrderToHistory();
     window.location.href =
       `mailto:shahzebali654321@gmail.com?subject=New Order&body=${encodeURIComponent(generateMessage())}`;
     resetAfterCheckout();
@@ -240,6 +258,7 @@ Total: ₱${total}`;
 
   const checkoutViber = () => {
     finalizeCustomer();
+    saveOrderToHistory();
     window.location.href =
       `viber://forward?text=${encodeURIComponent(generateMessage())}`;
     resetAfterCheckout();
@@ -256,6 +275,75 @@ Total: ₱${total}`;
       emptyQuantities[p.uniqueId] = '';
     });
     setQuantityMap(emptyQuantities);
+  };
+
+  /* ================= ORDER HISTORY ================= */
+  const printOrder = (order) => {
+    const printWindow = window.open('', '', 'width=800,height=600');
+    const itemsList = order.items.map(i => 
+      `<tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${i.code}</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">${i.description}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${i.quantity}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₱${i.price}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₱${(i.price * i.quantity).toFixed(2)}</td>
+      </tr>`
+    ).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Order #${order.id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h2 { margin-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th { background: #f5f5f5; padding: 8px; border: 1px solid #ddd; text-align: left; }
+            .total { font-size: 18px; font-weight: bold; margin-top: 20px; text-align: right; }
+          </style>
+        </head>
+        <body>
+          <h2>Order #${order.id}</h2>
+          <p><strong>Date:</strong> ${order.date}</p>
+          <p><strong>Staff:</strong> ${order.staff}</p>
+          <p><strong>Customer:</strong> ${order.customer}</p>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Description</th>
+                <th style="text-align: center;">Quantity</th>
+                <th style="text-align: right;">Price</th>
+                <th style="text-align: right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsList}
+            </tbody>
+          </table>
+          
+          <div class="total">Total: ₱${order.total.toFixed(2)}</div>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = function() {
+                window.close();
+              };
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const clearHistory = () => {
+    if (!window.confirm('Are you sure you want to clear all order history? This cannot be undone.')) return;
+    setOrderHistory([]);
+    localStorage.removeItem('orderHistory');
   };
 
   /* ================= STAFF MANAGEMENT ================= */
@@ -304,7 +392,7 @@ Total: ₱${total}`;
 
   /* ================= ADMIN SCREEN ================= */
   if (screen === 'admin') return (
-    <div style={{ maxWidth: 600, margin: '40px auto', padding: 20 }}>
+    <div style={{ maxWidth: 900, margin: '40px auto', padding: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <h2>Admin Panel</h2>
         <button
@@ -315,12 +403,20 @@ Total: ₱${total}`;
         </button>
       </div>
 
-      <button
-        style={{ padding: '10px 20px', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
-        onClick={() => setIsStaffModalOpen(true)}
-      >
-        Manage Staff
-      </button>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+        <button
+          style={{ padding: '10px 20px', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          onClick={() => setIsStaffModalOpen(true)}
+        >
+          Manage Staff
+        </button>
+        <button
+          style={{ padding: '10px 20px', background: '#2e7d32', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          onClick={() => setIsHistoryOpen(true)}
+        >
+          Order History ({orderHistory.length})
+        </button>
+      </div>
 
       {/* STAFF MANAGEMENT MODAL */}
       {isStaffModalOpen && (
@@ -366,6 +462,77 @@ Total: ₱${total}`;
             <button
               style={{ width: '100%', padding: 10, background: '#666', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginTop: 20 }}
               onClick={() => setIsStaffModalOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ORDER HISTORY MODAL */}
+      {isHistoryOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
+          <div style={{ background: 'white', padding: 30, width: '90%', maxWidth: 800, borderRadius: 8, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3>Order History</h3>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {orderHistory.length > 0 && (
+                  <button
+                    style={{ padding: '6px 12px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}
+                    onClick={clearHistory}
+                  >
+                    Clear History
+                  </button>
+                )}
+                <button
+                  style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer' }}
+                  onClick={() => setIsHistoryOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {orderHistory.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#666', padding: 40 }}>No orders yet</p>
+              ) : (
+                orderHistory.map(order => (
+                  <div key={order.id} style={{ background: '#f9f9f9', padding: 15, borderRadius: 6, marginBottom: 15 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 10 }}>
+                      <div>
+                        <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 5 }}>Order #{order.id}</div>
+                        <div style={{ fontSize: 13, color: '#666' }}>{order.date}</div>
+                        <div style={{ fontSize: 13, color: '#666' }}>Staff: {order.staff}</div>
+                        <div style={{ fontSize: 13, color: '#666' }}>Customer: {order.customer}</div>
+                      </div>
+                      <button
+                        style={{ padding: '6px 12px', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}
+                        onClick={() => printOrder(order)}
+                      >
+                        🖨️ Print
+                      </button>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid #ddd', paddingTop: 10, marginTop: 10 }}>
+                      {order.items.map((item, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '4px 0' }}>
+                          <span>{item.code} - {item.description}</span>
+                          <span>x{item.quantity} = ₱{(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div style={{ fontWeight: 'bold', marginTop: 10, textAlign: 'right', fontSize: 15 }}>
+                        Total: ₱{order.total.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <button
+              style={{ width: '100%', padding: 10, background: '#666', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginTop: 20 }}
+              onClick={() => setIsHistoryOpen(false)}
             >
               Close
             </button>
