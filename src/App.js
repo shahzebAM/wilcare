@@ -43,7 +43,6 @@ export default function ShoppingApp() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Student Items');
   const [cart, setCart] = useState([]);
-  const [quantityMap, setQuantityMap] = useState({});
 
   /* ================= MODALS ================= */
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -111,12 +110,6 @@ export default function ShoppingApp() {
       const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
       console.log('Categories:', uniqueCategories);
       setCategories(uniqueCategories);
-      
-      const q = {};
-      allProducts.forEach(p => {
-        q[p.uniqueId] = '';
-      });
-      setQuantityMap(q);
     });
   }, []);
 
@@ -156,34 +149,24 @@ export default function ShoppingApp() {
   };
 
   /* ================= CART ================= */
-  const addSelectedToCart = () => {
-    const itemsToAdd = filteredProducts.filter(p => {
-      const qty = quantityMap[p.uniqueId];
-      return qty && qty !== '' && Number(qty) > 0;
-    });
+  const handleQuantityChange = (product, qty) => {
+    const qtyNum = Number(qty);
     
-    if (itemsToAdd.length === 0) {
-      alert('Please enter quantities for items to add');
+    if (qty === '' || qtyNum === 0) {
+      setCart(cart.filter(i => i.uniqueId !== product.uniqueId));
       return;
     }
-
-    itemsToAdd.forEach(product => {
-      const qty = Number(quantityMap[product.uniqueId]);
+    
+    if (qtyNum > 0) {
       const existing = cart.find(i => i.uniqueId === product.uniqueId);
       if (existing) {
-        setCart(prev => prev.map(i =>
-          i.uniqueId === product.uniqueId ? { ...i, quantity: i.quantity + qty } : i
+        setCart(cart.map(i =>
+          i.uniqueId === product.uniqueId ? { ...i, quantity: qtyNum } : i
         ));
       } else {
-        setCart(prev => [...prev, { ...product, quantity: qty }]);
+        setCart([...cart, { ...product, quantity: qtyNum }]);
       }
-    });
-
-    const clearedQuantities = {};
-    Object.keys(quantityMap).forEach(key => {
-      clearedQuantities[key] = '';
-    });
-    setQuantityMap(clearedQuantities);
+    }
   };
 
   const updateCartQty = (uniqueId, qty) => {
@@ -269,12 +252,6 @@ Total: ₱${total}`;
     setCheckoutCustomer('');
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
-
-    const emptyQuantities = {};
-    products.forEach(p => {
-      emptyQuantities[p.uniqueId] = '';
-    });
-    setQuantityMap(emptyQuantities);
   };
 
   /* ================= ORDER HISTORY ================= */
@@ -360,6 +337,12 @@ Total: ₱${total}`;
   const removeStaff = (name) => {
     if (!window.confirm(`Remove staff "${name}"?`)) return;
     setStaffList(staffList.filter(s => s.name !== name));
+  };
+
+  /* ================= GET CART QUANTITY FOR PRODUCT ================= */
+  const getCartQuantity = (uniqueId) => {
+    const item = cart.find(i => i.uniqueId === uniqueId);
+    return item ? item.quantity : '';
   };
 
   /* ================= LOGIN SCREEN ================= */
@@ -542,11 +525,6 @@ Total: ₱${total}`;
     </div>
   );
 
-  const selectedCount = filteredProducts.filter(p => {
-    const qty = quantityMap[p.uniqueId];
-    return qty && qty !== '' && Number(qty) > 0;
-  }).length;
-
   /* ================= MAIN APP SCREEN ================= */
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 20px 100px' }}>
@@ -605,10 +583,9 @@ Total: ₱${total}`;
 
               <input
                 type="number"
-                value={quantityMap[item.uniqueId]}
-                onChange={e =>
-                  setQuantityMap({ ...quantityMap, [item.uniqueId]: e.target.value })
-                }
+                value={getCartQuantity(item.uniqueId)}
+                onChange={e => handleQuantityChange(item, e.target.value)}
+                placeholder="0"
                 style={{ width: 100, padding: 6, border: '1px solid #ddd', borderRadius: 4, textAlign: 'center' }}
                 onClick={e => e.stopPropagation()}
               />
@@ -616,52 +593,6 @@ Total: ₱${total}`;
           </div>
         ))}
       </div>
-
-      {/* SINGLE ADD BUTTON */}
-      {selectedCount > 0 && (
-        <button
-          onClick={addSelectedToCart}
-          style={{
-            position: 'fixed',
-            bottom: 100,
-            right: 20,
-            width: 60,
-            height: 60,
-            borderRadius: '50%',
-            background: '#1976d2',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            fontSize: 24,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100
-          }}
-        >
-          +
-          {selectedCount > 0 && (
-            <span style={{
-              position: 'absolute',
-              top: -8,
-              right: -8,
-              background: '#d32f2f',
-              color: 'white',
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 12,
-              fontWeight: 'bold'
-            }}>
-              {selectedCount}
-            </span>
-          )}
-        </button>
-      )}
 
       {/* CART FLOATING BUTTON */}
       <button
