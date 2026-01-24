@@ -76,6 +76,8 @@ export default function ShoppingApp() {
   useEffect(() => {
     const categoryFiles = [
       { name: 'Student Items', file: '/assets/products.json' },
+      { name: 'Dental Items', file: '/assets/dental.json' },
+      { name: 'Wilcare', file: '/assets/wilcare.json' },
     ];
 
     Promise.all(
@@ -194,8 +196,9 @@ export default function ShoppingApp() {
 
   /* ================= CHECKOUT MESSAGE ================= */
   const generateMessage = () => {
+    
     const items = cart
-      .map(i => `${i.code} - ${i.description} x ${i.quantity}`)
+      .map(i => `${i.code} - ${i.description} - ${i.price} = ${i.quantity} PCS` )
       .join('\n');
     const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     return `Staff: ${currentUser.name}

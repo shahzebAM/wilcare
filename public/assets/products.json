@@ -4,7 +4,6 @@
     "code": "S-01",
     "description": "Allis Tissue Forceps 6 1/4 inches (5x6)",
     "price": "95.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Allis-forceps_480x.jpg?v=1564960454"
   },
   {
@@ -12,7 +11,6 @@
     "code": "S-02",
     "description": "BANDAGE SCISSORS 3 1/2 inches",
     "price": "39.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Bandage-Scissors_480x.jpg?v=1564960552"
   },
   {
@@ -20,7 +18,6 @@
     "code": "S-03",
     "description": "BANDAGE SCISSORS 4 1/2inches",
     "price": "40.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Bandage-Scissors_480x.jpg?v=1564960552"
   },
   {
@@ -28,7 +25,6 @@
     "code": "S-04",
     "description": "BANDAGE SCISSORS 5 1/2inches",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Bandage-Scissors_480x.jpg?v=1564960552"
   },
   {
@@ -36,7 +32,6 @@
     "code": "S-04A",
     "description": "BANDAGE SCISSORS 7 1/4inches",
     "price": "120.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Bandage-Scissors_480x.jpg?v=1564960552"
   },
   {
@@ -44,7 +39,6 @@
     "code": "S-05",
     "description": "IRIS SCISSORS CVD. 4 1/2inches",
     "price": "33.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Iris-Scissors-cvd_480x.jpg?v=1565133776"
   },
   {
@@ -52,7 +46,6 @@
     "code": "S-06",
     "description": "IRIS SCISSORS STR. 4 1/2inches",
     "price": "33.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Iris-Scissors-Str_fb4abeee-3012-4335-a454-73bd93baeb8a_720x.jpg?v=1565133792"
   },
   {
@@ -60,7 +53,6 @@
     "code": "S-07",
     "description": "KELLY FORCEPS CVD. 5 1/2inches",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Kelly-forceps-cvd_480x.jpg?v=1565133981"
   },
   {
@@ -68,7 +60,6 @@
     "code": "S-08",
     "description": "KELLY FORCEPS STR. 5 1/2inches",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Kelly-forceps-str_fb667fd3-b2a1-4657-92ca-37ae5bb3567b_720x.jpg?v=1565133995"
   },
   {
@@ -76,7 +67,6 @@
     "code": "S-09",
     "description": "MAYO SCISSORS 5 1/2inches CVD.",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Mayo-Scissors-Cvd_480x.jpg?v=1572019311"
   },
   {
@@ -84,7 +74,6 @@
     "code": "S-10",
     "description": "MAYO SCISSORS 5 1/2inches STR.",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Mayo-Scissors-str_b1cbfe63-1fc0-4a8c-9049-57bf28070e15_480x.jpg?v=1572019295"
   },
   {
@@ -92,7 +81,6 @@
     "code": "S-11",
     "description": "METZ SCISSORS 7inches CVD.",
     "price": "90.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Metz-Scissors-cvd_480x.jpg?v=1565134309"
   },
   {
@@ -100,7 +88,6 @@
     "code": "S-12",
     "description": "METZ SCISSORS 7inches STR.",
     "price": "90.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Metz-Scissors-Str_680bee1e-1997-4f1e-a1ed-b8558c03f448_720x.jpg?v=1565134323"
   },
   {
@@ -108,7 +95,6 @@
     "code": "S-13",
     "description": "MOSQUITO FORCEPS 5inches CVD.",
     "price": "39.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Mosquito-Froceps-cvd_480x.jpg?v=1565134691"
   },
   {
@@ -116,7 +102,6 @@
     "code": "S-14",
     "description": "MOSQUITO FORCEPS 5inches STR.",
     "price": "39.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Mosquito-Froceps-str_72bff06c-ec71-4d6b-815e-cf0334e9cbac_720x.jpg?v=1565134703"
   },
   {
@@ -124,7 +109,6 @@
     "code": "S-15",
     "description": "NEEDLE HOLDER 5inches",
     "price": "42.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Needle-Holder_480x.jpg?v=1564962855"
   },
   {
@@ -132,7 +116,6 @@
     "code": "S-15A",
     "description": "NEEDLE HOLDER 5 1/2inches",
     "price": "42.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Needle-Holder_480x.jpg?v=1564962855"
   },
   {
@@ -140,7 +123,6 @@
     "code": "S-16",
     "description": "NEEDLE HOLDER 6inches",
     "price": "62.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Needle-Holder_480x.jpg?v=1564962855"
   },
   {
@@ -148,7 +130,6 @@
     "code": "S-17",
     "description": "NEEDLE HOLDER 7inches",
     "price": "90.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Needle-Holder_480x.jpg?v=1564962855"
   },
   {
@@ -156,7 +137,6 @@
     "code": "S-18",
     "description": "PEAN FORCEPS 6 1/4inches CVD.",
     "price": "65.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Pean-forceps-cvd_480x.jpg?v=1565134899"
   },
   {
@@ -164,7 +144,6 @@
     "code": "S-19",
     "description": "PEAN FORCEPS 6 1/4inches STR.",
     "price": "65.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Pean-forceps-str_685b8457-1836-42df-b739-971be32a8927_720x.jpg?v=1565134915"
   },
   {
@@ -172,7 +151,6 @@
     "code": "S-20",
     "description": "SCALPEL HANDLE # 3",
     "price": "27.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Scalpel-Handle-03_480x.jpg?v=1565135299"
   },
   {
@@ -180,7 +158,6 @@
     "code": "S-21",
     "description": "SCALPEL HANDLE # 4",
     "price": "27.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Scalpel-Handle-04_65a397b5-42d3-4750-9625-66f51bc01cd7_1024x1024.jpg?v=1565135315"
   },
   {
@@ -188,7 +165,6 @@
     "code": "S-22",
     "description": "SURGICAL/ OPERATING SCISSORS 5 1/2inches CVD.",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Surgical-Scissors-cvd_480x.jpg?v=1565135587"
   },
   {
@@ -196,7 +172,6 @@
     "code": "S-23",
     "description": "SURGICAL/OPERATING SCISSORS 5 1/2inches STR.",
     "price": "41.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Surgical-Scissors-str_ea269d83-ada4-449b-aa86-088fb0f39671_720x.jpg?v=1565135600"
   },
   {
@@ -204,7 +179,6 @@
     "code": "S-23A",
     "description": "SURGICAL SCISSORS 4 1/2inches STR.",
     "price": "39.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Surgical-Scissors-str_ea269d83-ada4-449b-aa86-088fb0f39671_720x.jpg?v=1565135600"
   },
   {
@@ -212,7 +186,6 @@
     "code": "S-24",
     "description": "STITCH SCISSORS 5 1/2inches",
     "price": "53.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Stitch-Scissors_480x.jpg?v=1564963690"
   },
   {
@@ -220,7 +193,6 @@
     "code": "S-25",
     "description": "THUMB FORCEPS 5 1/2inches SERRATED",
     "price": "28.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Thumb-forceps_480x.jpg?v=1564963764"
   },
   {
@@ -228,7 +200,6 @@
     "code": "S-26",
     "description": "TISSUE FORCEPS 1X2 TEETH 5 1/2inches",
     "price": "28.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Tissue-forceps_480x.jpg?v=1564963850"
   },
   {
@@ -236,7 +207,6 @@
     "code": "S-27",
     "description": "TOWEL CLAMP 5 1/2inches",
     "price": "69.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Towel-Clamp_480x.jpg?v=1564963899"
   },
   {
@@ -244,7 +214,6 @@
     "code": "S-28",
     "description": "TUNING FORK # 256",
     "price": "91.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Tuning-Fork-256_480x.jpg?v=1565136309"
   },
   {
@@ -252,7 +221,6 @@
     "code": "S-29",
     "description": "TUNING FORK # 256C",
     "price": "112.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Tuning-Fork-256C-with-Bell_8a1fb46c-f1fb-4f2b-b02e-06d1509d7467_1024x1024.jpg?v=1565136042"
   },
   {
@@ -260,7 +228,6 @@
     "code": "S-30",
     "description": "TUNING FORK # 512",
     "price": "91.00",
-    "name": "a",
     "image": "https://img.lazcdn.com/g/p/8524d23225eaef3faad38ebcbe8dc25f.jpg_720x720q80.jpg_.webp"
   },
   {
@@ -268,7 +235,6 @@
     "code": "S-31",
     "description": "SPONGE FORCEPS 9 1/2inches CVD.",
     "price": "170.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Sponge-forceps-cvd_480x.jpg?v=1565135462"
   },
   {
@@ -276,7 +242,6 @@
     "code": "S-31B",
     "description": "SPONGE FORCEPS 9  1/2inches STR.",
     "price": "170.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Sponge-forceps_str_5c2e2144-4d63-4561-8eee-b600e01203ef_720x.jpg?v=1565135474"
   },
   {
@@ -284,7 +249,6 @@
     "code": "S-32",
     "description": "ADSON TISSUE FORCEPS 4 3/4inches",
     "price": "35.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Adson-Tissue-forceps_480x.jpg?v=1564964739"
   },
   {
@@ -292,7 +256,6 @@
     "code": "S-33",
     "description": "ADSON THUMB FORCEPS 4 3/4inches SERRATED",
     "price": "35.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Adson-Thumb-forceps_480x.jpg?v=1564964821"
   },
   {
@@ -300,7 +263,6 @@
     "code": "S-34",
     "description": "BUCK HAMMER T.SHAPE WITH PIN AND BRUSH BLACK",
     "price": "145.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Buck-Hamer_480x.jpg?v=1564964942"
   },
   {
@@ -308,7 +270,6 @@
     "code": "S-35",
     "description": "DISSECTING SET (SET OF 14)",
     "price": "340.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/secheron-disecting-kit-14pcs_480x.jpg?v=1565137695"
   },
   {
@@ -316,7 +277,6 @@
     "code": "S-36",
     "description": "OKADA DISSECTING SET PLASTIC HANDLE (SET OF 7 PCS)",
     "price": "95.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Okada-Plastic_720x.jpg?v=1565138256"
   },
   {
@@ -324,7 +284,6 @@
     "code": "S-37",
     "description": "OKADA DISSECTING SET STAINLESS (SET OF 7 PCS)",
     "price": "144.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/okada-stainless_480x.jpg?v=1565138269"
   },
   {
@@ -332,7 +291,6 @@
     "code": "S-38",
     "description": "MINOR DISSECTING KIT (SET OF 16)",
     "price": "575.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/secheron-minor-kit-16pcs_480x.jpg?v=1565137771"
   },
   {
@@ -340,7 +298,6 @@
     "code": "S-41",
     "description": "REFLEX HAMMER WITH PIN & BRUSH (RED)",
     "price": "145.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Reflex-Hamer-with-Pin-and-Brush_480x.jpg?v=1565135154"
   },
   {
@@ -348,7 +305,6 @@
     "code": "S-42",
     "description": "Comedone Extractor D/End 1mmx2mm",
     "price": "75.00",
-    "name": "a",
     "image": "https://www.mpmmedicalsupply.com/cdn/shop/products/iris-scissors_1024x1024.jpg?v=1536010421"
   },
   {
@@ -356,7 +312,6 @@
     "code": "S-43",
     "description": "Comedone Extractor D/End ( Pointed / Hole)",
     "price": "75.00",
-    "name": "a",
     "image": "https://www.mpmmedicalsupply.com/cdn/shop/products/iris-scissors_1024x1024.jpg?v=1536010421"
   },
   {
@@ -364,7 +319,6 @@
     "code": "S-44",
     "description": "EAR FORCEPS",
     "price": "126.00",
-    "name": "a",
     "image": "https://www.mpmmedicalsupply.com/cdn/shop/products/iris-scissors_1024x1024.jpg?v=1536010421"
   },
   {
@@ -372,7 +326,6 @@
     "code": "S-46",
     "description": "POWER SCISSORS (TRAUMA SHEAR) UTILITY SCISSORS 7inches",
     "price": "65.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Power-Scissors_480x.jpg?v=1564965294"
   },
   {
@@ -380,7 +333,6 @@
     "code": "S-47",
     "description": "TUNING FORK # 128C",
     "price": "199.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Tuning-Fork-128_1024x1024.jpg?v=1565136031"
   },
   {
@@ -388,7 +340,6 @@
     "code": "S-49",
     "description": "ALLIGATOR FORCEPS 5 1/2inches",
     "price": "320.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Aligator-Forceps_480x.jpg?v=1564965448"
   },
   {
@@ -396,7 +347,6 @@
     "code": "S-51",
     "description": "REFLEX HAMMER W/O PIN & BRUSH RED",
     "price": "120.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Reflex-Hamer-with-Pin-and-Brush_480x.jpg?v=1565135154"
   },
   {
@@ -404,7 +354,6 @@
     "code": "S-52",
     "description": "Kelly Forceps Str. 8inches",
     "price": "110.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Kelly-forceps-str_fb667fd3-b2a1-4657-92ca-37ae5bb3567b_720x.jpg?v=1565133995"
   },
   {
@@ -412,7 +361,6 @@
     "code": "S-53",
     "description": "Kelly Forceps Cvd.8inches",
     "price": "110.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Kelly-forceps-cvd_480x.jpg?v=1565133981"
   },
   {
@@ -420,7 +368,6 @@
     "code": "S-54",
     "description": "SURGICAL SCISSORS 5 1/2inches STR. S/S",
     "price": "45.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/products/Kelly-forceps-str_fb667fd3-b2a1-4657-92ca-37ae5bb3567b_720x.jpg?v=1565133995"
   },
   {
@@ -428,7 +375,6 @@
     "code": "S-55",
     "description": "TUNING FORK # 128",
     "price": "149.00",
-    "name": "a",
     "image": "https://img.lazcdn.com/g/p/b2c64e7bc0da5c503388e3759fe85ec3.jpg_720x720q80.jpg_.webp"
   },
   {
@@ -436,7 +382,6 @@
     "code": "S-56",
     "description": "Suture Set (Set of 14 Pcs)",
     "price": "395.00",
-    "name": "a",
     "image": "https://wilcare.com.ph/cdn/shop/files/IMG_9588_480x.jpg?v=1751100479"
   }
 ]
